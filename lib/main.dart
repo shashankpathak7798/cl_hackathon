@@ -1,4 +1,4 @@
-import 'package:cl_hackathon/module/chatbot/presentations/widgets/chat_bot_mobile_view.dart';
+import 'package:cl_hackathon/modules/chat/presentation/views/chat_bot_mobile_view.dart';
 import 'package:cl_hackathon/modules/chat/presentation/pages/chat_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: ChatScreen(),
+
     );
   }
 }
