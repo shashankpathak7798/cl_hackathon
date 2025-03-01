@@ -23,16 +23,43 @@
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="cl_hackathon">
+  <meta name="apple-mobile-web-app-title" content="CentraGPT">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>cl_hackathon</title>
+  <title>CentraGPT</title>
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>
+
+  <div id='loading_indicator' class='container'>
+    <div id='lottie-animation' class='indicator'></div>
+  </div>
+
+  <script>
+    window.onload = function () {
+      setTimeout(function () {
+        var loadingIndicator = document.getElementById('loading_indicator');
+        if (loadingIndicator) {
+          loadingIndicator.remove();
+        }
+      }, 20000);
+    };
+  </script>
+
+  <!-- Lottie Animation Initialization -->
+  <script>
+    var animation = lottie.loadAnimation({
+      container: document.getElementById('lottie-animation'), 
+      renderer: 'svg', 
+      loop: true, 
+      autoplay: true, 
+      path: './assets/cl_hackthon_loader.json',
+    });
+  </script>
+
 </body>
 </html>
