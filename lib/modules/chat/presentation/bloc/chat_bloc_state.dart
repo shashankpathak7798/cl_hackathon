@@ -5,16 +5,21 @@ sealed class ChatBlocState {}
 
 final class ChatBlocInitial extends ChatBlocState {}
 
-class GetResponseForQueryLoadingState extends ChatBlocState {}
+class GetResponseForQuerySuccessState extends ChatBlocState {
+  final List<ChatEntity> chats;
 
-class GetResponseForQueryFailureState extends ChatBlocState {}
+  GetResponseForQuerySuccessState({this.chats = const []});
+}
 
-class GetResponseForQuerySuccessState extends ChatBlocState {}
+abstract class GetResponseForQueryActionStates
+    extends GetResponseForQuerySuccessState {
+  GetResponseForQueryActionStates({super.chats});
+}
 
-class ChatBotLoaded extends ChatBlocState {
-  final List<Message>? messages;
-  ChatBotLoaded({this.messages});
+class GetResponseForQueryLoadingState extends GetResponseForQueryActionStates {
+  GetResponseForQueryLoadingState({super.chats});
+}
 
-  @override
-  List<Object?> get props => [messages];
+class GetResponseForQueryFailureState extends GetResponseForQueryActionStates {
+  GetResponseForQueryFailureState({super.chats});
 }

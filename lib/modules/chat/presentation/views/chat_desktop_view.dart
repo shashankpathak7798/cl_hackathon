@@ -1,53 +1,170 @@
+import 'package:cl_hackathon/modules/chat/presentation/bloc/chat_bloc_bloc.dart';
+import 'package:cl_hackathon/modules/chat/presentation/widgets/chats_widget.dart';
+import 'package:cl_hackathon/responsive.dart';
 import 'package:cl_hackathon/ui_helpers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-class ChatDesktopView extends StatelessWidget {
-  ChatDesktopView({super.key});
+class ChatView extends StatefulWidget {
+  const ChatView({super.key});
 
-  final TextEditingController controller = TextEditingController();
+  @override
+  State<ChatView> createState() => _ChatViewState();
+}
+
+class _ChatViewState extends State<ChatView> {
+  final queryFieldFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    queryFieldFocusNode.addListener(
+      () {
+        if (!queryFieldFocusNode.hasFocus) {
+          if (!queryFieldFocusNode.hasFocus) {
+            queryFieldFocusNode.requestFocus();
+          }
+        }
+      },
+    );
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        UIHelpers.verticalSpaceRegular,
-        Icon(
-          Icons.smart_toy,
-          size: 40,
-        ),
-        UIHelpers.verticalSpaceSmall,
-        Text("CL HACKATHON"),
-        UIHelpers.listDivider,
-        Expanded(
-          child: Column(
-            children: [],
-          ),
-        ),
-        UIHelpers.listDivider,
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40),
-          child: TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              hintText: "Enter your query here!",
-              hintStyle: TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
+    return BlocBuilder<ChatBlocBloc, ChatBlocState>(
+      builder: (context, state) {
+        return Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Container(
+              height: 70,
+              padding: const EdgeInsets.all(10.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    "CentraGPT",
+                    style: GoogleFonts.ibmPlexMono(
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  VerticalDivider(
+                    color: Colors.black,
+                  ),
+                  Text(
+                    "New Chat",
+                    style: GoogleFonts.ibmPlexMono(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                        letterSpacing: -0.5),
+                  ),
+                ],
               ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(4),
+            ),
+            Expanded(
+              child: Container(
+                width: UIHelpers.screenWidth(context),
+                height: UIHelpers.screenHeight(context) - 70,
+                margin: EdgeInsets.symmetric(horizontal: 71),
+                decoration: BoxDecoration(color: Colors.white),
+                padding: EdgeInsets.symmetric(
+                  horizontal: Responsive.isMobile(context) ? 40 : 100,
                 ),
-                borderSide: BorderSide(
-                  width: 0.3,
-                  color: Colors.grey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (BlocProvider.of<ChatBlocBloc>(context)
+                        .chats
+                        .isNotEmpty) ...{
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 68,
+                        ),
+                        child: ChatsWidget(),
+                      ),
+                      Spacer(),
+                    } else ...{
+                      Text(
+                        "What can I help with?",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.ibmPlexMono(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 48,
+                        ),
+                      ),
+                      UIHelpers.verticalSpace(24),
+                    },
+                    SizedBox(
+                      height: 82,
+                      child: TextField(
+                        autofocus: true,
+                        enabled: state is! GetResponseForQueryLoadingState,
+                        controller: BlocProvider.of<ChatBlocBloc>(context)
+                            .queryController,
+                        onSubmitted: state is GetResponseForQueryLoadingState
+                            ? null
+                            : (value) => BlocProvider.of<ChatBlocBloc>(context)
+                                .add(GetResponseForQueryEvent()),
+                        focusNode: queryFieldFocusNode,
+                        decoration: InputDecoration(
+                          hintText: "Enter your query here!",
+                          hintStyle: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10),
+                            ),
+                            borderSide: BorderSide(
+                              width: 1,
+                              color: Color(0xFF3D2D4C),
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10),
+                            ),
+                            borderSide: BorderSide(
+                              width: 1,
+                              color: Color(0xFF3D2D4C),
+                            ),
+                          ),
+                          disabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10),
+                            ),
+                            borderSide: BorderSide(
+                              width: 1,
+                              color: Color(0xFF3D2D4C),
+                            ),
+                          ),
+                          contentPadding: EdgeInsets.all(27),
+                          suffix: InkWell(
+                              onTap: state is GetResponseForQueryLoadingState
+                                  ? null
+                                  : () => BlocProvider.of<ChatBlocBloc>(context)
+                                      .add(GetResponseForQueryEvent()),
+                              child: Icon(
+                                Icons.send,
+                                color: state is GetResponseForQueryLoadingState
+                                    ? Colors.grey
+                                    : Color(0xFF8E12D5),
+                              )),
+                        ),
+                      ),
+                    ),
+                    UIHelpers.verticalSpace(31),
+                  ],
                 ),
               ),
             ),
-          ),
-        ),
-        UIHelpers.verticalSpaceTiny,
-      ],
+          ],
+        );
+      },
     );
   }
 }

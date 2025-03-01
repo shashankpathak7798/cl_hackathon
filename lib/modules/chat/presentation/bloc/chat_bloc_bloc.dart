@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cl_hackathon/modules/chat/data/message.dart';
+import 'package:cl_hackathon/modules/chat/domain/entities/chat_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cl_hackathon/data_state.dart';
@@ -12,37 +12,83 @@ part 'chat_bloc_state.dart';
 
 class ChatBlocBloc extends Bloc<ChatBlocEvent, ChatBlocState> {
   final TextEditingController msgcontroller = TextEditingController();
-  final List<Message> _messages = [];
 
   ChatBlocBloc() : super(ChatBlocInitial()) {
     on<ChatBlocEvent>((event, emit) {});
 
     on<GetResponseForQueryEvent>(_onGetResponseForQueryEvent);
-    on<SendMessageEvent>(_onSendMessageEvent);
   }
+
+  final TextEditingController queryController = TextEditingController();
+
+  List<ChatEntity> chats = [];
 
   FutureOr<void> _onGetResponseForQueryEvent(
       GetResponseForQueryEvent event, Emitter<ChatBlocState> emit) async {
     try {
-      emit(GetResponseForQueryLoadingState());
-
-      final response = await ChatUseCase().getResponse();
-
-      if (response is DataSuccess) {
-        emit(GetResponseForQuerySuccessState());
+      if (event.isTryAgain == true) {
+        chats.removeLast();
       } else {
-        emit(GetResponseForQueryFailureState());
+        chats.add(ChatEntity(
+          explanation: queryController.text,
+        ));
+      }
+
+      chats.add(ChatEntity(
+        explanation: "",
+        isBot: true,
+      ));
+
+      emit(GetResponseForQueryLoadingState(
+        chats: chats,
+      ));
+
+      final response =
+          await ChatUseCase().getResponse(query: queryController.text);
+      queryController.clear();
+      if (response is DataSuccess<ChatEntity>) {
+        if (response.data == null) {
+          chats.removeLast();
+          chats.add(ChatEntity(
+            explanation: "Oops! Something went wrong! Try again",
+            isError: true,
+            isBot: true,
+          ));
+          emit(GetResponseForQuerySuccessState(
+            chats: chats,
+          ));
+        } else {
+          chats.removeLast();
+          chats.add(response.data ??
+              ChatEntity(
+                explanation: "Oops! Something went wrong! Try again",
+                isBot: true,
+                isError: true,
+              ));
+          emit(GetResponseForQuerySuccessState(
+            chats: chats,
+          ));
+        }
+      } else {
+        chats.removeLast();
+        chats.add(ChatEntity(
+            explanation: "Oops! Something went wrong! Try again",
+            isError: true,
+            isBot: true));
+        emit(GetResponseForQueryFailureState(
+          chats: chats,
+        ));
       }
     } catch (e) {
-      emit(GetResponseForQueryFailureState());
+      chats.removeLast();
+      chats.add(ChatEntity(
+        explanation: "Oops! Something went wrong! Try again",
+        isError: true,
+        isBot: true,
+      ));
+      emit(GetResponseForQueryFailureState(
+        chats: chats,
+      ));
     }
-  }
-
-  FutureOr<void> _onSendMessageEvent(
-      SendMessageEvent event, Emitter<ChatBlocState> emit) async {
-    _messages.add(Message(text: event.message, isUser: true));
-    const botResponse = "This is a static response from the bot.";
-    _messages.add(Message(text: botResponse, isUser: false));
-    emit(ChatBotLoaded(messages: List.from(_messages)));
   }
 }
