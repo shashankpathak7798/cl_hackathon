@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cl_hackathon/data_state.dart';
 import 'package:cl_hackathon/modules/chat/domain/usecases/chat_use_case.dart';
-import 'package:meta/meta.dart';
 
 part 'chat_event.dart';
 part 'chat_state.dart';
@@ -26,12 +25,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   FutureOr<void> _onGetResponseForQueryEvent(
       GetResponseForQueryEvent event, Emitter<ChatState> emit) async {
     try {
-      if (formKey.currentState?.validate() != true) {
-        return;
-      }
       if (event.isTryAgain == true) {
         chats.removeLast();
       } else {
+        if (formKey.currentState?.validate() != true) {
+          return;
+        }
         chats.add(ChatEntity(
           explanation: queryController.text,
         ));
@@ -53,7 +52,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         if (response.data == null) {
           chats.removeLast();
           chats.add(ChatEntity(
-            explanation: "Oops! Something went wrong! Try again",
+            explanation: "Oops! Something went wrong! Try again!",
             isError: true,
             isBot: true,
           ));
@@ -64,7 +63,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           chats.removeLast();
           chats.add(response.data ??
               ChatEntity(
-                explanation: "Oops! Something went wrong! Try again",
+                explanation: "Oops! Something went wrong! Try again!",
                 isBot: true,
                 isError: true,
               ));
@@ -75,7 +74,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       } else {
         chats.removeLast();
         chats.add(ChatEntity(
-            explanation: "Oops! Something went wrong! Try again",
+            explanation: "Oops! Something went wrong! Try again!",
             isError: true,
             isBot: true));
         emit(GetResponseForQueryFailureState(
@@ -85,7 +84,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     } catch (e) {
       chats.removeLast();
       chats.add(ChatEntity(
-        explanation: "Oops! Something went wrong! Try again",
+        explanation: "Oops! Something went wrong! Try again!",
         isError: true,
         isBot: true,
       ));

@@ -52,7 +52,7 @@ class ChatBubble extends StatelessWidget {
                       )
                     } else ...{
                       Flexible(
-                        child: Text(
+                        child: SelectableText(
                           chatEntity.explanation,
                           style: chatEntity.isBot
                               ? GoogleFonts.roboto(
@@ -65,25 +65,6 @@ class ChatBubble extends StatelessWidget {
                                 ),
                         ),
                       ),
-                      if (chatEntity.isError) ...{
-                        UIHelpers.horizontalSpaceTiny,
-                        Flexible(
-                          child: InkWell(
-                            onTap: () => BlocProvider.of<ChatBloc>(context)
-                                .add(GetResponseForQueryEvent(
-                              isTryAgain: true,
-                            )),
-                            child: Text(
-                              "Click Here",
-                              style: GoogleFonts.roboto(
-                                fontSize: 18,
-                                color: Colors.blue,
-                                decoration: TextDecoration.underline,
-                              ),
-                            ),
-                          ),
-                        ),
-                      },
                     }
                   ],
                 ),

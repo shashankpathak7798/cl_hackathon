@@ -157,18 +157,33 @@ class _ChatViewState extends State<ChatView> {
                               ),
                             ),
                             contentPadding: EdgeInsets.all(27),
-                            suffix: InkWell(
-                                onTap: state is GetResponseForQueryLoadingState
-                                    ? null
-                                    : () => BlocProvider.of<ChatBloc>(context)
-                                        .add(GetResponseForQueryEvent()),
-                                child: Icon(
-                                  Icons.send,
-                                  color:
-                                      state is GetResponseForQueryLoadingState
+                            suffix: state is GetResponseForQueryFailureState
+                                ? InkWell(
+                                    onTap: () =>
+                                        BlocProvider.of<ChatBloc>(context).add(
+                                      GetResponseForQueryEvent(
+                                        isTryAgain: true,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      Icons.sync,
+                                      color: Color(0xFF8E12D5),
+                                    ),
+                                  )
+                                : InkWell(
+                                    onTap: state
+                                            is GetResponseForQueryLoadingState
+                                        ? null
+                                        : () => BlocProvider.of<ChatBloc>(
+                                                context)
+                                            .add(GetResponseForQueryEvent()),
+                                    child: Icon(
+                                      Icons.send,
+                                      color: state
+                                              is GetResponseForQueryLoadingState
                                           ? Colors.grey
                                           : Color(0xFF8E12D5),
-                                )),
+                                    )),
                           ),
                         ),
                       ),
