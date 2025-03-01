@@ -7,25 +7,28 @@ import 'package:cl_hackathon/data_state.dart';
 import 'package:cl_hackathon/modules/chat/domain/usecases/chat_use_case.dart';
 import 'package:meta/meta.dart';
 
-part 'chat_bloc_event.dart';
-part 'chat_bloc_state.dart';
+part 'chat_event.dart';
+part 'chat_state.dart';
 
-class ChatBlocBloc extends Bloc<ChatBlocEvent, ChatBlocState> {
-  final TextEditingController msgcontroller = TextEditingController();
-
-  ChatBlocBloc() : super(ChatBlocInitial()) {
-    on<ChatBlocEvent>((event, emit) {});
-
-    on<GetResponseForQueryEvent>(_onGetResponseForQueryEvent);
-  }
-
+class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final TextEditingController queryController = TextEditingController();
 
   List<ChatEntity> chats = [];
 
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  ChatBloc() : super(ChatBlocInitial()) {
+    on<ChatEvent>((event, emit) {});
+
+    on<GetResponseForQueryEvent>(_onGetResponseForQueryEvent);
+  }
+
   FutureOr<void> _onGetResponseForQueryEvent(
-      GetResponseForQueryEvent event, Emitter<ChatBlocState> emit) async {
+      GetResponseForQueryEvent event, Emitter<ChatState> emit) async {
     try {
+      if (formKey.currentState?.validate() != true) {
+        return;
+      }
       if (event.isTryAgain == true) {
         chats.removeLast();
       } else {

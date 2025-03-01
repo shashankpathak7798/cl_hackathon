@@ -1,6 +1,6 @@
 import 'package:cl_hackathon/modules/chat/data/models/get_response_for_query_response_model.dart';
 import 'package:cl_hackathon/modules/chat/domain/entities/chat_entity.dart';
-import 'package:cl_hackathon/modules/chat/presentation/bloc/chat_bloc_bloc.dart';
+import 'package:cl_hackathon/modules/chat/presentation/bloc/chat_bloc.dart';
 import 'package:cl_hackathon/ui_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,7 +15,7 @@ class ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ChatBlocBloc, ChatBlocState>(
+    return BlocBuilder<ChatBloc, ChatState>(
       builder: (context, state) {
         final isLoading = state is GetResponseForQueryLoadingState;
         return Align(
@@ -69,7 +69,7 @@ class ChatBubble extends StatelessWidget {
                         UIHelpers.horizontalSpaceTiny,
                         Flexible(
                           child: InkWell(
-                            onTap: () => BlocProvider.of<ChatBlocBloc>(context)
+                            onTap: () => BlocProvider.of<ChatBloc>(context)
                                 .add(GetResponseForQueryEvent(
                               isTryAgain: true,
                             )),

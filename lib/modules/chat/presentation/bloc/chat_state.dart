@@ -1,11 +1,11 @@
-part of 'chat_bloc_bloc.dart';
+part of 'chat_bloc.dart';
 
 @immutable
-sealed class ChatBlocState {}
+sealed class ChatState {}
 
-final class ChatBlocInitial extends ChatBlocState {}
+final class ChatBlocInitial extends ChatState {}
 
-class GetResponseForQuerySuccessState extends ChatBlocState {
+class GetResponseForQuerySuccessState extends ChatState {
   final List<ChatEntity> chats;
 
   GetResponseForQuerySuccessState({this.chats = const []});

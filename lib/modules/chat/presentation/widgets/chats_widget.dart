@@ -1,4 +1,4 @@
-import 'package:cl_hackathon/modules/chat/presentation/bloc/chat_bloc_bloc.dart';
+import 'package:cl_hackathon/modules/chat/presentation/bloc/chat_bloc.dart';
 import 'package:cl_hackathon/modules/chat/presentation/widgets/chat_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,10 +33,9 @@ class _ChatsWidgetState extends State<ChatsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ChatBlocBloc, ChatBlocState>(
+    return BlocBuilder<ChatBloc, ChatState>(
       builder: (context, state) {
-        final chats =
-            BlocProvider.of<ChatBlocBloc>(context, listen: true).chats;
+        final chats = BlocProvider.of<ChatBloc>(context, listen: true).chats;
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _scrollToBottom();
